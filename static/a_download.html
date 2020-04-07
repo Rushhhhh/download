@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <a
+      href="https://folder1107.oss-cn-beijing.aliyuncs.com/1f7665ce27f9b905a4b5baa3366d631f.jpg?Expires=1584751579&OSSAccessKeyId=TMP.3KeqJUbQFqBbUDZJc42CCFjKBHsBmtDV2uuLHedTqMfrWb2vaAtcSF4yE4JUWVDbb5hPL6FzFJJeGfCVXFMYqyG247hjhT&Signature=pocTloOF%2BNpckBjL28RvslE7288%3D"
+      download="coldplay"
+      >直接触发a点击下载</a
+    >
+    <br />
+    <br />
+    <button id="btnBD">创建a下载</button>
+    <br />
+    <br />
+    <button id="btnJSON">下载json</button>
+    <br />
+    <br />
+    <button id="btnCANVAS">结合canvas下载</button>
+  </body>
+  <script>
+    function downloadFile(blob, name) {
+      let a = document.createElement("a");
+      a.download = name;
+      var anchor = URL.createObjectURL(blob); //通过`createObjectURL`转为一个可以访问的地址
+      a.href = anchor;
+      a.click();
+    }
+
+    let btnBD = document.querySelector("#btnBD");
+    btnBD.addEventListener("click", function(e) {
+      fetch("https://www.baidu.com/img/bd_logo1.png")
+        .then(res => {
+          return res.blob();
+        })
+        .then(blob => {
+          downloadFile(blob, "baidu");
+        });
+    });
+
+    const config = {
+      name: "lsqy",
+      password: "yourpassword",
+      ak: "XXXXXXXXXX",
+      sk: "XXXXXXXXXX"
+    };
+    const blobContent = new Blob([JSON.stringify(config, null, 2)], {
+      type: "application/json"
+    });
+    let btnJSON = document.querySelector("#btnJSON");
+    btnJSON.addEventListener("click", function() {
+      downloadFile(blobContent, "test.json");
+    });
+
+    function downloadIamge(imgsrc, name) {
+      //下载图片地址和图片名
+      let image = new Image();
+      // 解决跨域 Canvas 污染问题
+      image.setAttribute("crossOrigin", "anonymous");
+      image.onload = function() {
+        let canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        let context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, image.width, image.height);
+        let url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+        let a = document.createElement("a");
+        a.download = name || "photo";
+        a.href = url; //
+        a.click();
+      };
+      image.src = imgsrc;
+    }
+
+    let btnCANVAS = document.querySelector("#btnCANVAS");
+    let url = "https://www.baidu.com/img/bd_logo1.png";
+    btnCANVAS.addEventListener("click", function(e) {
+      downloadIamge(url, "hhh ");
+    });
+  </script>
+</html>
